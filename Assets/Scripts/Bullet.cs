@@ -38,7 +38,7 @@ public class Bullet : Entity
             return;
         }
 
-        if (entity.ObjectName == "PlayerDoubleBullet")
+        if (entity.ObjectName == "PlayerDoubleBullet" || entity.ObjectName == "PlayerShip")
         {
             return;
         }

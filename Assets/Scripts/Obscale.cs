@@ -4,6 +4,8 @@ using Helpers;
 
 public class Obscale : Entity
 {
+    public Player Player;
+
     public Color Color;
     public float Health = 100;
 
@@ -11,6 +13,9 @@ public class Obscale : Entity
     public BoxCollider2D BoxCollider2D;
     public GameObject AliveGameObject;
     public GameObject DeadGameObject;
+
+    public float DamageFromCollision;
+    public float ScoreToAdd;
 
     private bool _enabledDeadEffects = false;
 
@@ -32,6 +37,8 @@ public class Obscale : Entity
         if (Health <= 0 && !_enabledDeadEffects)
         {
             Instantiate(ResourceManager.GetGameObject("Explosion1"), transform.position, transform.rotation);
+
+            Player.PlayerScore += ScoreToAdd;
             Destroy(AliveGameObject);
 
             DeadGameObject.SetActive(true);

@@ -5,6 +5,8 @@ namespace Helpers
 {
     public static class ResourceManager
     {
+        public static bool isDoingSetup { get; set; }
+
         private static GameObjectList _gameObjectList;
         public static void SetGameObjectList(GameObjectList objectList)
         {
