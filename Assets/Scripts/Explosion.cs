@@ -1,20 +1,17 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Explosion : Entity
 {
-    protected ParticleSystem _particleSystem;
+    protected ParticleSystem ParticleSystem;
 
-	// Use this for initialization
     protected override void Start ()
 	{
-	    _particleSystem = GetComponent<ParticleSystem>();
+	    ParticleSystem = GetComponent<ParticleSystem>();
 	}
 	
-	// Update is called once per frame
     protected override void Update ()
     {
-	    if (!_particleSystem.IsAlive())
+	    if (!ParticleSystem.IsAlive())
 	    {
 	        Destroy(gameObject);
 	    }

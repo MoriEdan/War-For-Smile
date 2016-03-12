@@ -16,8 +16,11 @@ public class PlayerMovement : MonoBehaviour
 	
     private void Update ()
     {
-        UpdateMovement();
-        UpdateShooting();
+        if (_player.IsAlive && !ResourceManager.isDoingSetup)
+        {
+            UpdateMovement();
+            UpdateShooting();
+        }
     }
 
     private void UpdateMovement()

@@ -6,8 +6,7 @@ public abstract class Entity : MonoBehaviour
     public string ObjectName;
     public Sprite Sprite;
 
-    public float WeaponUseDelay;
-
+    
     protected virtual void Awake()
     {
 

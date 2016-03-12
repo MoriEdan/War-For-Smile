@@ -5,6 +5,12 @@ using UnityEngine.UI;
 
 public class Player : Entity
 {
+    public bool IsAlive;
+
+    private ParticleSystem _playerExplosionParticleSystem;
+    private bool _hasPlayerExploded = false;
+
+    public float WeaponUseDelay;
     private float _currentWeaponUseDelay;
 
     public float ExplosionDelay;
@@ -25,8 +31,8 @@ public class Player : Entity
     public float DamageApplyDelay;
     private float _currentDamageApplyDelay;
 
+    private ScoreHandler _scoreHandler;
     public Text ScoreText;
-
     private float _playerScore;
     public float PlayerScore
     {
@@ -34,15 +40,19 @@ public class Player : Entity
         set
         {
             _playerScore = value;
+            _scoreHandler.TotalPlayerPoints = _playerScore;
             ScoreText.text = string.Format("Score:{0}", _playerScore.ToString("F0"));
         }
     }
 
     protected override void Start()
     {
+        _scoreHandler = GameObject.FindGameObjectWithTag("ScoreHandler").GetComponent<ScoreHandler>();
+        PlayerScore = 0.0f;
         _currentHealth = MaxHealth;
-        //ResourceManager.isDoingSetup = true;
-        //SpawnScreen.ActiveSpawnScreen(SpawnDelay);
+        IsAlive = true;
+        
+        SpawnScreen.ActiveSpawnScreen(SpawnDelay);
     }
 
     protected override void Update()
@@ -61,6 +71,10 @@ public class Player : Entity
         }
         HeatBar.value = _currentHeat;
 
+        if (_currentHealth <= 0.0f && !_hasPlayerExploded)
+        {
+            PlayDeadSequence();
+        }
     }
 
     public void Shoot()
@@ -91,7 +105,7 @@ public class Player : Entity
 
     private bool ReadyToFire()
     {
-        return _currentWeaponUseDelay >= WeaponUseDelay;
+        return (_currentWeaponUseDelay >= WeaponUseDelay);
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
@@ -99,6 +113,12 @@ public class Player : Entity
         var entity = coll.gameObject.GetComponent<Entity>();
         if (entity == null || entity.ObjectName == "PlayerDoubleBullet")
         {
+            return;
+        }
+
+        if (entity.ObjectName == "Border")
+        {
+            ApplyDamage(1000);
             return;
         }
 
@@ -113,11 +133,6 @@ public class Player : Entity
             return;
         }
 
-        if (coll.gameObject.name == "StartBorder")
-        {
-            //Debug.Log(coll.gameObject.name);
-            ApplyDamage(11.0f);
-        }
     }
 
     private void ApplyDamage(float damage)
@@ -128,10 +143,10 @@ public class Player : Entity
             if (_currentHealth < 0)
             {
                 _currentHealth = 0.0f;
+                IsAlive = false;
             }
 
             SetDisplayHealth((_currentHealth/MaxHealth)*100.0f);
-            Debug.Log(damage);
             _currentDamageApplyDelay = 0.0f;
         }
     }
@@ -139,5 +154,20 @@ public class Player : Entity
     private void SetDisplayHealth(float health)
     {
         HealthText.text = string.Format("Health:{0}%", health.ToString("F0"));
+    }
+
+    private void PlayDeadSequence()
+    {
+        _hasPlayerExploded = true;
+
+        var spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer)
+        {
+            spriteRenderer.enabled = false;
+        }
+
+        var playerExplosion = (GameObject)Instantiate(ResourceManager.GetGameObject("PlayerExplosion"), transform.position, transform.rotation);
+        _playerExplosionParticleSystem = playerExplosion.GetComponent<ParticleSystem>();
+
     }
 }

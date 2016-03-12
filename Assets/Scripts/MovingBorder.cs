@@ -15,13 +15,15 @@ public class MovingBorder : Entity
 	// Update is called once per frame
     protected override void Update ()
     {
-        if (!ResourceManager.isDoingSetup)
+        if (ResourceManager.isDoingSetup)
         {
-            var movement = transform.position;
-            movement.x += Speed*Time.deltaTime;
-
-            transform.position = movement;
+            return;
         }
+
+        var movement = transform.position;
+        movement.x += Speed*Time.deltaTime;
+
+        transform.position = movement;
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
