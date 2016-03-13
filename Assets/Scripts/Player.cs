@@ -7,7 +7,6 @@ public class Player : Entity
 {
     public bool IsAlive;
 
-    private ParticleSystem _playerExplosionParticleSystem;
     private bool _hasPlayerExploded = false;
 
     public float WeaponUseDelay;
@@ -166,8 +165,6 @@ public class Player : Entity
             spriteRenderer.enabled = false;
         }
 
-        var playerExplosion = (GameObject)Instantiate(ResourceManager.GetGameObject("PlayerExplosion"), transform.position, transform.rotation);
-        _playerExplosionParticleSystem = playerExplosion.GetComponent<ParticleSystem>();
-
+        Instantiate(ResourceManager.GetGameObject("PlayerExplosion"), transform.position, transform.rotation);
     }
 }
