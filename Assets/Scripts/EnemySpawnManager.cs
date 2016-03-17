@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Helpers;
 
 public class EnemySpawnManager : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class EnemySpawnManager : MonoBehaviour
 
     public float SpawnDelay;
     private float _currentSpawnDelay;
+
+    public bool RotateObstacles;
 
 	// Use this for initialization
     private void Start ()
@@ -18,12 +21,15 @@ public class EnemySpawnManager : MonoBehaviour
 	// Update is called once per frame
     private void Update ()
     {
-        _currentSpawnDelay += Time.deltaTime;
-
-        if (_currentSpawnDelay >= SpawnDelay)
+        if (!ResourceManager.isDoingSetup)
         {
-            SpawnObscale();
-            _currentSpawnDelay = 0.0f;
+            _currentSpawnDelay += Time.deltaTime;
+
+            if (_currentSpawnDelay >= SpawnDelay)
+            {
+                SpawnObscale();
+                _currentSpawnDelay = 0.0f;
+            }
         }
     }
 
@@ -40,7 +46,10 @@ public class EnemySpawnManager : MonoBehaviour
         scale.y += Random.Range(0.1f, 1.0f);
 
         var rotation = transform.rotation;
-        //rotation.z += Random.Range(0.0f, 180.0f);
+        if (RotateObstacles)
+        {
+            rotation.z += Random.Range(0.0f, 180.0f);
+        }
 
         var obstacle = ((GameObject)Instantiate(ObscalesToSpawn[index], pos, rotation)).GetComponent<Obscale>();
         obstacle.Player = PlayerReference;

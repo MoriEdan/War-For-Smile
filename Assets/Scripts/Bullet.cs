@@ -43,7 +43,7 @@ public class Bullet : Entity
             return;
         }
 
-        if (entity.ObjectName == "Border")
+        if (entity.ObjectName == "Border" || entity.ObjectName == "ChasingBorder")
         {
             CreateExplosionOnBorder();
             Destroy(this.gameObject);

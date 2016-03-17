@@ -28,7 +28,7 @@ public class Obscale : Entity
 	// Update is called once per frame
     protected override void Update ()
     {
-        if ( _enabledDeadEffects)
+        if (_enabledDeadEffects)
         {
             Destroy(gameObject, 1.9f);
             return;
@@ -36,14 +36,39 @@ public class Obscale : Entity
 
         if (Health <= 0 && !_enabledDeadEffects)
         {
-            Instantiate(ResourceManager.GetGameObject("Explosion1"), transform.position, transform.rotation);
-
-            Player.PlayerScore += ScoreToAdd;
-            Destroy(AliveGameObject);
-
-            DeadGameObject.SetActive(true);
-            BoxCollider2D.enabled = false;
-            _enabledDeadEffects = true;
+            DestoryOnDemand();
         }
 	}
+
+    public void DestoryOnDemand(bool addScoreToPlayer = true)
+    {
+        Instantiate(ResourceManager.GetGameObject("Explosion1"), transform.position, transform.rotation);
+
+        if (addScoreToPlayer)
+        {
+            Player.PlayerScore += ScoreToAdd;
+        }
+        Destroy(AliveGameObject);
+
+        DeadGameObject.SetActive(true);
+        BoxCollider2D.enabled = false;
+        _enabledDeadEffects = true;
+    }
+
+    public void SilentDestory()
+    {
+        Destroy(gameObject);
+    }
+
+    private void OnBecameInvisible()
+    {
+        enabled = false;
+        Debug.Log(enabled);
+    }
+
+    private void OnBecameVisible()
+    {
+        enabled = true;
+        Debug.Log(enabled);
+    }
 }

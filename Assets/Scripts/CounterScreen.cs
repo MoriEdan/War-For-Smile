@@ -28,14 +28,7 @@ public class CounterScreen : MonoBehaviour
             var time = Mathf.FloorToInt(_currentDelay);
             if (_previousTime != time)
             {
-                if (time%2 == 1)
-                {
-                    CounterText.text = RandomLenny.GetRandomLenny();
-                }
-                else
-                {
-                    CounterText.text = time.ToString();
-                }
+                CounterText.text = time == 1 ? RandomLenny.GetRandomLenny() : time.ToString();
                 _previousTime = time;
             }
         }

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Player : Entity
 {
+    public bool EnableSpawnScreen = true;
+
     public bool IsAlive;
 
     private bool _hasPlayerExploded = false;
@@ -25,6 +27,7 @@ public class Player : Entity
     public float GunHeatingRate = 1.7f;
 
     public Text HealthText;
+    public Text HealthTextShadow;
     public float MaxHealth = 100.0f;
     private float _currentHealth;
     public float DamageApplyDelay;
@@ -32,6 +35,7 @@ public class Player : Entity
 
     private ScoreHandler _scoreHandler;
     public Text ScoreText;
+    public Text ScoreTextShadow;
     private float _playerScore;
     public float PlayerScore
     {
@@ -41,6 +45,7 @@ public class Player : Entity
             _playerScore = value;
             _scoreHandler.TotalPlayerPoints = _playerScore;
             ScoreText.text = string.Format("Score:{0}", _playerScore.ToString("F0"));
+            ScoreTextShadow.text = ScoreText.text;
         }
     }
 
@@ -50,8 +55,12 @@ public class Player : Entity
         PlayerScore = 0.0f;
         _currentHealth = MaxHealth;
         IsAlive = true;
-        
-        SpawnScreen.ActiveSpawnScreen(SpawnDelay);
+        //transform.position = SpawnPoint.transform.position;
+
+        if (EnableSpawnScreen)
+        {
+            SpawnScreen.ActiveSpawnScreen(SpawnDelay);
+        }
     }
 
     protected override void Update()
@@ -132,6 +141,13 @@ public class Player : Entity
             return;
         }
 
+        var chasingBorder = coll.gameObject.GetComponent<ChasingBorder>();
+        if (chasingBorder)
+        {
+            ApplyDamage(99999.0f);
+            return;
+        }
+
     }
 
     private void ApplyDamage(float damage)
@@ -153,6 +169,7 @@ public class Player : Entity
     private void SetDisplayHealth(float health)
     {
         HealthText.text = string.Format("Health:{0}%", health.ToString("F0"));
+        HealthTextShadow.text = HealthText.text;
     }
 
     private void PlayDeadSequence()

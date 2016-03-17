@@ -2,7 +2,7 @@
 using System.Collections;
 using Helpers;
 
-public class MovingBorder : Entity
+public class ChasingBorder : Entity
 {
     public float Speed = 1.0f;
 
@@ -28,6 +28,10 @@ public class MovingBorder : Entity
 
     private void OnCollisionEnter2D(Collision2D coll)
     {
-        //Debug.Log(coll.gameObject.name);
+        var obstacle = coll.gameObject.GetComponent<Obscale>();
+        if (obstacle)
+        {
+            obstacle.SilentDestory();
+        }
     }
 }
