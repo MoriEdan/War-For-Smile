@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Helpers;
 using Helpers;
 using UnityEngine.UI;
 
@@ -14,6 +15,11 @@ public class Player : Entity
     public float WeaponUseDelay;
     private float _currentWeaponUseDelay;
 
+    public Slider EmotionMetterFunSlider;
+    private float _emotionMetterFunValue = 100.0f;
+
+    private AmmoType _currentAmmoType = AmmoType.Fun;
+
     public float ExplosionDelay;
     private float _currentExplosionDelay;
 
@@ -27,7 +33,6 @@ public class Player : Entity
     public float GunHeatingRate = 1.7f;
 
     public Text HealthText;
-    public Text HealthTextShadow;
     public float MaxHealth = 100.0f;
     private float _currentHealth;
     public float DamageApplyDelay;
@@ -35,7 +40,6 @@ public class Player : Entity
 
     private ScoreHandler _scoreHandler;
     public Text ScoreText;
-    public Text ScoreTextShadow;
     private float _playerScore;
     public float PlayerScore
     {
@@ -45,7 +49,6 @@ public class Player : Entity
             _playerScore = value;
             _scoreHandler.TotalPlayerPoints = _playerScore;
             ScoreText.text = string.Format("Score:{0}", _playerScore.ToString("F0"));
-            ScoreTextShadow.text = ScoreText.text;
         }
     }
 
@@ -94,12 +97,20 @@ public class Player : Entity
             var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var dir = mousePos - transform.position;
             var angle = Mathf.Atan2(dir.y, dir.x)*Mathf.Rad2Deg;
+            var angleR = Mathf.Atan2(dir.y, dir.x);
 
             angle += Random.Range(-2.9f, 2.9f);
             var q = Quaternion.AngleAxis(angle, Vector3.forward);
 
-            var offset = transform.rotation*new Vector3(0.3f, 0.0f, 0f);
-            var bullet = ((GameObject) Instantiate(ResourceManager.GetGameObject("PlayerDoubleBullet"), transform.position + offset, q)).GetComponent<Bullet>();
+            //var offset = transform.rotation*new Vector3(0.3f, 0.0f, 0f);
+            var radius = 0.3f;
+            var superPos = new Vector3
+            {
+                x = transform.position.x + (radius*Mathf.Sin(angleR)),
+                y = transform.position.y + (radius * Mathf.Cos(angleR))
+            };
+
+            var bullet = ((GameObject)Instantiate(ResourceManager.GetGameObject("PlayerDoubleBullet"), superPos, q)).GetComponent<Bullet>();
             if (_currentExplosionDelay >= ExplosionDelay)
             {
                 bullet.ShouldCreateExplosion = true;
@@ -108,12 +119,14 @@ public class Player : Entity
 
             _currentHeat += GunHeatingRate;
             HeatBar.value = _currentHeat;
+
+            //UpdateAmmoState(-2);
         }
     }
 
     private bool ReadyToFire()
     {
-        return (_currentWeaponUseDelay >= WeaponUseDelay);
+        return ((_currentWeaponUseDelay >= WeaponUseDelay) && (_emotionMetterFunValue > 0.0f));
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
@@ -169,7 +182,6 @@ public class Player : Entity
     private void SetDisplayHealth(float health)
     {
         HealthText.text = string.Format("Health:{0}%", health.ToString("F0"));
-        HealthTextShadow.text = HealthText.text;
     }
 
     private void PlayDeadSequence()
@@ -183,5 +195,34 @@ public class Player : Entity
         }
 
         Instantiate(ResourceManager.GetGameObject("PlayerExplosion"), transform.position, transform.rotation);
+    }
+
+    private void UpdateAmmoState(float amount)
+    {
+        switch (_currentAmmoType)
+        {
+                case AmmoType.Nautral:
+                break;
+
+                case AmmoType.Fun:
+                UpdateEmotionMeterFunSlider(amount);
+                break;
+
+                case AmmoType.Sad:
+                break;
+        }
+    }
+
+    private void UpdateEmotionMeterFunSlider(float amount)
+    {
+        _emotionMetterFunValue += amount;
+        _emotionMetterFunValue = Mathf.Clamp(_emotionMetterFunValue, 0.0f, 100.0f);
+
+        EmotionMetterFunSlider.value = _emotionMetterFunValue;
+    }
+
+    public void RefreshEmotionAmmo(float amount)
+    {
+        UpdateAmmoState(+amount);
     }
 }

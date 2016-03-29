@@ -31,7 +31,8 @@ public class ChasingBorder : Entity
         var obstacle = coll.gameObject.GetComponent<Obscale>();
         if (obstacle)
         {
-            obstacle.SilentDestory();
+            //obstacle.SilentDestory();
+            obstacle.DestoryOnDemand(false);
         }
     }
 }

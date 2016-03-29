@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_player.IsAlive && !ResourceManager.isDoingSetup)
         {
+            UpdateMouse();
             UpdateMovement();
             UpdateShooting();
         }
@@ -28,8 +29,7 @@ public class PlayerMovement : MonoBehaviour
         var velocity = PlayerSpeed*UserInput.GetMovementDirection()*Time.deltaTime;
         transform.position += velocity;
 
-        transform.position = new Vector3((transform.position.x<0)?0: transform.position.x, 
-            Mathf.Clamp(transform.position.y, -2f, 2f));
+        //transform.position = new Vector3((transform.position.x<0)?0: transform.position.x, Mathf.Clamp(transform.position.y, -2f, 2f));
 
         if (ChaoticCamera)
         {
@@ -45,6 +45,14 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space))
         {
             _player.Shoot();
+        }
+    }
+
+    private void UpdateMouse()
+    {
+        if (Input.GetMouseButton(1))
+        {
+            _player.RefreshEmotionAmmo(15 * Time.deltaTime);
         }
     }
 }
