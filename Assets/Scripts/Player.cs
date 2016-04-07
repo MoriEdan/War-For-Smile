@@ -12,6 +12,9 @@ public class Player : Entity
 
     private bool _hasPlayerExploded = false;
 
+    public GameObject CrosshairSphere;
+    public GameObject CrosshairObject;
+
     public float WeaponUseDelay;
     private float _currentWeaponUseDelay;
 
@@ -97,20 +100,15 @@ public class Player : Entity
             var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var dir = mousePos - transform.position;
             var angle = Mathf.Atan2(dir.y, dir.x)*Mathf.Rad2Deg;
-            var angleR = Mathf.Atan2(dir.y, dir.x);
 
             angle += Random.Range(-2.9f, 2.9f);
             var q = Quaternion.AngleAxis(angle, Vector3.forward);
 
-            //var offset = transform.rotation*new Vector3(0.3f, 0.0f, 0f);
-            var radius = 0.3f;
-            var superPos = new Vector3
-            {
-                x = transform.position.x + (radius*Mathf.Sin(angleR)),
-                y = transform.position.y + (radius * Mathf.Cos(angleR))
-            };
+            CrosshairSphere.transform.rotation = q;
+            var spawnRotation = CrosshairSphere.transform.rotation;
+            var spawnPosition = CrosshairObject.transform.position;
 
-            var bullet = ((GameObject)Instantiate(ResourceManager.GetGameObject("PlayerDoubleBullet"), superPos, q)).GetComponent<Bullet>();
+            var bullet = ((GameObject)Instantiate(ResourceManager.GetGameObject("PlayerDoubleBullet"), spawnPosition, spawnRotation)).GetComponent<Bullet>();
             if (_currentExplosionDelay >= ExplosionDelay)
             {
                 bullet.ShouldCreateExplosion = true;
