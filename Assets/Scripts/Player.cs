@@ -14,6 +14,7 @@ public class Player : Entity
 
     private bool _hasPlayerExploded = false;
     private SpriteRenderer _spriteRenderer;
+    private EmotionManager _emotionManager;
 
     public GameObject CrosshairSphere;
     public GameObject CrosshairObject;
@@ -79,6 +80,12 @@ public class Player : Entity
         {
             Debug.LogError("No Sprite Renderer");
         }
+
+        _emotionManager = GetComponentInChildren<EmotionManager>();
+        if (_emotionManager == null)
+        {
+            Debug.LogError("No Emotion Manager");
+        }
     }
 
     protected override void Update()
@@ -105,7 +112,7 @@ public class Player : Entity
 
     public void Shoot()
     {
-        if (ReadyToFire() && _currentHeat < HeatBar.maxValue)
+        if (ReadyToFire())
         {
             _currentWeaponUseDelay = 0.0f;
 
@@ -132,14 +139,22 @@ public class Player : Entity
 
             if (!IsNeutralAmmoType())
             {
-                UpdateAmmoState(-1);
+                UpdateAmmoState(-10);
             }
         }
     }
 
     private bool ReadyToFire()
     {
-        return ((_currentWeaponUseDelay >= WeaponUseDelay) && ((_emotionMetterValue > 0.0f) || IsNeutralAmmoType()));
+        // can fire if:
+        // 1 - weapon use delay passed
+        // 2 - weapon is not overheated
+        // 3 - have emotion ammo if emotion bullet selected
+        // 4 - emotion manager is not loading ammo if emotion bullet selected
+        return (_currentWeaponUseDelay >= WeaponUseDelay) 
+            && _currentHeat < HeatBar.maxValue 
+            && ((_emotionMetterValue > 0.0f) || IsNeutralAmmoType())
+            && (!_emotionManager.IsLoadingEmotions || IsNeutralAmmoType());
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
@@ -259,7 +274,7 @@ public class Player : Entity
         return _currentAmmoType == AmmoType.Neutral;
     }
 
-    private void UpdateEmotionMeterSlider(float amount)
+    public void UpdateEmotionMeterSlider(float amount)
     {
         _emotionMetterValue += amount;
         _emotionMetterValue = Mathf.Clamp(_emotionMetterValue, 0.0f, 100.0f);
