@@ -2,7 +2,7 @@
 using System.Collections;
 using Helpers;
 
-public class Obscale : Entity
+public class Obstacle : Entity
 {
     public Player Player;
 

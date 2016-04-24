@@ -28,7 +28,7 @@ public class ChasingBorder : Entity
 
     private void OnCollisionEnter2D(Collision2D coll)
     {
-        var obstacle = coll.gameObject.GetComponent<Obscale>();
+        var obstacle = coll.gameObject.GetComponent<Obstacle>();
         if (obstacle)
         {
             //obstacle.SilentDestory();

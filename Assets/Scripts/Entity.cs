@@ -4,7 +4,6 @@ using System.Collections;
 public abstract class Entity : MonoBehaviour
 {
     public string ObjectName;
-    public Sprite Sprite;
 
     
     protected virtual void Awake()

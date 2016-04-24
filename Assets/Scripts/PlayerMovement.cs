@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Helpers;
 using Helpers;
 
 public class PlayerMovement : MonoBehaviour
@@ -21,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
             UpdateMouse();
             UpdateMovement();
             UpdateShooting();
+            UpdateKeyboard();
         }
     }
 
@@ -53,6 +55,22 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             _player.RefreshEmotionAmmo(15 * Time.deltaTime);
+        }
+    }
+
+    private void UpdateKeyboard()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            _player.SetCurrentAmmoType(AmmoType.Neutral);
+        } 
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            _player.SetCurrentAmmoType(AmmoType.Fun);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            _player.SetCurrentAmmoType(AmmoType.Sad);
         }
     }
 }

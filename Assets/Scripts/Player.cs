@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using Assets.Scripts.Helpers;
 using Helpers;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Player : Entity
 {
@@ -11,6 +13,7 @@ public class Player : Entity
     public bool IsAlive;
 
     private bool _hasPlayerExploded = false;
+    private SpriteRenderer _spriteRenderer;
 
     public GameObject CrosshairSphere;
     public GameObject CrosshairObject;
@@ -18,10 +21,13 @@ public class Player : Entity
     public float WeaponUseDelay;
     private float _currentWeaponUseDelay;
 
-    public Slider EmotionMetterFunSlider;
-    private float _emotionMetterFunValue = 100.0f;
+    public Slider EmotionMetterSlider;
+    private float _emotionMetterValue = 100.0f;
 
-    private AmmoType _currentAmmoType = AmmoType.Fun;
+    private AmmoType _currentAmmoType = AmmoType.Neutral;
+    private float _firedFunBullets = 0;
+    private float _firedSadBullets = 0;
+    private float _firedNeutralBullets = 0;
 
     public float ExplosionDelay;
     private float _currentExplosionDelay;
@@ -67,6 +73,12 @@ public class Player : Entity
         {
             SpawnScreen.ActiveSpawnScreen(SpawnDelay);
         }
+
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        if (_spriteRenderer == null)
+        {
+            Debug.LogError("No Sprite Renderer");
+        }
     }
 
     protected override void Update()
@@ -108,7 +120,7 @@ public class Player : Entity
             var spawnRotation = CrosshairSphere.transform.rotation;
             var spawnPosition = CrosshairObject.transform.position;
 
-            var bullet = ((GameObject)Instantiate(ResourceManager.GetGameObject("PlayerDoubleBullet"), spawnPosition, spawnRotation)).GetComponent<Bullet>();
+            var bullet = ((GameObject)Instantiate(GetCurrentBulletPrefab(), spawnPosition, spawnRotation)).GetComponent<Bullet>();
             if (_currentExplosionDelay >= ExplosionDelay)
             {
                 bullet.ShouldCreateExplosion = true;
@@ -118,13 +130,16 @@ public class Player : Entity
             _currentHeat += GunHeatingRate;
             HeatBar.value = _currentHeat;
 
-            //UpdateAmmoState(-2);
+            if (!IsNeutralAmmoType())
+            {
+                UpdateAmmoState(-1);
+            }
         }
     }
 
     private bool ReadyToFire()
     {
-        return ((_currentWeaponUseDelay >= WeaponUseDelay) && (_emotionMetterFunValue > 0.0f));
+        return ((_currentWeaponUseDelay >= WeaponUseDelay) && ((_emotionMetterValue > 0.0f) || IsNeutralAmmoType()));
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
@@ -145,7 +160,7 @@ public class Player : Entity
 
     private void OnCollisionStay2D(Collision2D coll)
     {
-        var obscale = coll.gameObject.GetComponent<Obscale>();
+        var obscale = coll.gameObject.GetComponent<Obstacle>();
         if (obscale)
         {
             ApplyDamage(obscale.DamageFromCollision);
@@ -199,28 +214,80 @@ public class Player : Entity
     {
         switch (_currentAmmoType)
         {
-                case AmmoType.Nautral:
+                case AmmoType.Neutral:
+                _firedNeutralBullets++;
                 break;
 
                 case AmmoType.Fun:
-                UpdateEmotionMeterFunSlider(amount);
+                _firedFunBullets++;
+                UpdateEmotionMeterSlider(amount);
                 break;
 
                 case AmmoType.Sad:
+                _firedSadBullets++;
+                UpdateEmotionMeterSlider(amount);
                 break;
         }
     }
 
-    private void UpdateEmotionMeterFunSlider(float amount)
+    public void SetCurrentAmmoType(AmmoType type)
     {
-        _emotionMetterFunValue += amount;
-        _emotionMetterFunValue = Mathf.Clamp(_emotionMetterFunValue, 0.0f, 100.0f);
+        _currentAmmoType = type;
+        switch (_currentAmmoType)
+        {
+            case AmmoType.Neutral:
+                _spriteRenderer.color = Color.white;
+                break;
 
-        EmotionMetterFunSlider.value = _emotionMetterFunValue;
+            case AmmoType.Fun:
+                _spriteRenderer.color = Color.green;
+                break;
+
+            case AmmoType.Sad:
+                _spriteRenderer.color = Color.red;
+                break;
+
+            default:
+                _spriteRenderer.color = Color.cyan;
+                Debug.LogWarning("Default Ammo Type");
+                break;
+        }
+    }
+
+    private bool IsNeutralAmmoType()
+    {
+        return _currentAmmoType == AmmoType.Neutral;
+    }
+
+    private void UpdateEmotionMeterSlider(float amount)
+    {
+        _emotionMetterValue += amount;
+        _emotionMetterValue = Mathf.Clamp(_emotionMetterValue, 0.0f, 100.0f);
+
+        EmotionMetterSlider.value = _emotionMetterValue;
     }
 
     public void RefreshEmotionAmmo(float amount)
     {
         UpdateAmmoState(+amount);
+    }
+
+    private GameObject GetCurrentBulletPrefab()
+    {
+        switch (_currentAmmoType)
+        {
+            case AmmoType.Neutral:
+                return ResourceManager.GetGameObject("PlayerWhiteBullet");
+
+            case AmmoType.Fun:
+                return ResourceManager.GetGameObject("PlayerGreenBullet");
+
+            case AmmoType.Sad:
+                return ResourceManager.GetGameObject("PlayerRedBullet");
+
+            default:
+                Debug.LogWarning("Default Bullet Type");
+                return ResourceManager.GetGameObject("PlayerWhiteBullet");
+        }
     }
 }

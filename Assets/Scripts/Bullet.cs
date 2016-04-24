@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Helpers;
 using Helpers;
 
 public class Bullet : Entity
@@ -7,6 +8,7 @@ public class Bullet : Entity
     public float Velocity;
     public float Range;
     public float Damage;
+    public AmmoType BulletType;
 
     public bool ShouldCreateExplosion = false;
 
@@ -52,7 +54,7 @@ public class Bullet : Entity
 
         Destroy(this.gameObject);
         
-        var obscale = coll.gameObject.GetComponent<Obscale>();
+        var obscale = coll.gameObject.GetComponent<Obstacle>();
         if (obscale)
         {
             obscale.Health -= Damage;

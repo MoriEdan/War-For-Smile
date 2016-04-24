@@ -51,7 +51,7 @@ public class EnemySpawnManager : MonoBehaviour
             rotation.z += Random.Range(0.0f, 180.0f);
         }
 
-        var obstacle = ((GameObject)Instantiate(ObscalesToSpawn[index], pos, rotation)).GetComponent<Obscale>();
+        var obstacle = ((GameObject)Instantiate(ObscalesToSpawn[index], pos, rotation)).GetComponent<Obstacle>();
         obstacle.Player = PlayerReference;
         obstacle.transform.localScale = scale;
     }

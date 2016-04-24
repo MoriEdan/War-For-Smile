@@ -2,6 +2,6 @@
 {
     public enum AmmoType
     {
-        Nautral, Fun, Sad
+        Neutral, Fun, Sad
     }
 }
