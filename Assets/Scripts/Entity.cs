@@ -3,9 +3,6 @@ using System.Collections;
 
 public abstract class Entity : MonoBehaviour
 {
-    public string ObjectName;
-
-    
     protected virtual void Awake()
     {
 

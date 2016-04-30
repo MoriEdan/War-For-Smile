@@ -27,8 +27,7 @@ public class GameObjectList : MonoBehaviour
     {
         foreach (var obj in Objects)
         {
-            var entity = obj.GetComponent<Entity>();
-            if (entity && entity.ObjectName == objectName)
+            if (obj.name == objectName)
             {
                 return obj;
             }

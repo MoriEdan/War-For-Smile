@@ -4,4 +4,9 @@
     {
         Neutral, Fun, Sad
     }
+
+    public enum BossBodyPart
+    {
+        Left, Central, Right
+    }
 }

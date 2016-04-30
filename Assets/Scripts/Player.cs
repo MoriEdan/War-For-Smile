@@ -11,8 +11,8 @@ public class Player : Entity
     public bool EnableSpawnScreen = true;
 
     public bool IsAlive;
-
     private bool _hasPlayerExploded = false;
+
     private SpriteRenderer _spriteRenderer;
     private EmotionManager _emotionManager;
 
@@ -61,6 +61,7 @@ public class Player : Entity
             ScoreText.text = string.Format("Score:{0}", _playerScore.ToString("F0"));
         }
     }
+
 
     protected override void Start()
     {
@@ -159,18 +160,21 @@ public class Player : Entity
 
     private void OnCollisionEnter2D(Collision2D coll)
     {
-        var entity = coll.gameObject.GetComponent<Entity>();
-        if (entity == null || entity.ObjectName == "PlayerDoubleBullet")
+        var entity = coll.gameObject;
+
+        var border = entity.GetComponent<Border>();
+        if (border)
         {
+            ApplyDamage(9999, false);
             return;
         }
 
-        if (entity.ObjectName == "Border")
+        var bossBody = entity.GetComponent<BossBodyPart>();
+        if (bossBody)
         {
-            ApplyDamage(1000);
+            ApplyDamage(9999, false);
             return;
         }
-
     }
 
     private void OnCollisionStay2D(Collision2D coll)
@@ -191,12 +195,12 @@ public class Player : Entity
 
     }
 
-    private void ApplyDamage(float damage)
+    public void ApplyDamage(float damage, bool delayed = true)
     {
-        if (_currentDamageApplyDelay >= DamageApplyDelay)
+        if ((_currentDamageApplyDelay >= DamageApplyDelay) || !delayed)
         {
             _currentHealth -= damage;
-            if (_currentHealth < 0)
+            if (_currentHealth <= 0)
             {
                 _currentHealth = 0.0f;
                 IsAlive = false;

@@ -2,7 +2,7 @@
 using System.Collections;
 using Helpers;
 
-public class ChasingBorder : Entity
+public class ChasingBorder : Border
 {
     public float Speed = 1.0f;
 
@@ -26,7 +26,7 @@ public class ChasingBorder : Entity
         transform.position = movement;
     }
 
-    private void OnCollisionEnter2D(Collision2D coll)
+    protected override void OnCollisionEnter2D(Collision2D coll)
     {
         var obstacle = coll.gameObject.GetComponent<Obstacle>();
         if (obstacle)
