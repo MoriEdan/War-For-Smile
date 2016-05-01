@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Helpers;
-using UnityEditor;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class BossFight : MonoBehaviour
@@ -48,6 +48,7 @@ public class BossFight : MonoBehaviour
         if (BossHealth <= 0.0f)
         {
             Debug.Log("Wygrales");
+            SceneManager.LoadScene("Victory");
             Destroy(this);
         }
     }
