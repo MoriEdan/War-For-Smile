@@ -25,10 +25,15 @@ public class BossFight : MonoBehaviour
     public float ExplosionDelay;
     private float _currentExplosionDelay;
 
+    private bool _hasBossExploded = false;
+
     void Start ()
 	{
         _cannons = CannonHolder.GetComponentsInChildren<BossCannon>();
+
         BossHealthSlider.maxValue = BossHealth;
+        BossHealthSlider.value = BossHealth;
+        BossHealthSlider.gameObject.SetActive(true);
 	}
 	
 	void Update ()
@@ -38,7 +43,21 @@ public class BossFight : MonoBehaviour
 	    BossBody.transform.Rotate(Vector3.forward * (RotationRate * Time.deltaTime));
 	    UpdateBossShooting();
 
+	    if (BossHealth <= 0.0f && !_hasBossExploded)
+	    {
+	        PlayDeadSequence();
+	    }
+
 	}
+
+    private void PlayDeadSequence()
+    {
+        _hasBossExploded = true;
+
+        this.gameObject.SetActive(false);
+
+        Instantiate(ResourceManager.GetGameObject("BossExplosion"), transform.position, transform.rotation);
+    }
 
     public void UpdateBossHealth(float amout)
     {
@@ -47,9 +66,7 @@ public class BossFight : MonoBehaviour
 
         if (BossHealth <= 0.0f)
         {
-            Debug.Log("Wygrales");
-            SceneManager.LoadScene("Victory");
-            Destroy(this);
+            BossHealth = 0.0f;
         }
     }
 
