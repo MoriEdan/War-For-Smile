@@ -1,7 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Helpers;
 using UnityEngine.UI;
+
+using Helpers;
 
 public class EmotionManager : MonoBehaviour
 {
@@ -18,15 +21,23 @@ public class EmotionManager : MonoBehaviour
     public Text EmotionTextHeader;
     public Text EmotionTextSmile;
     public Text EmotionTextSad;
+    public Text EmotionTextCorrect;
+    public Text EmotionTextWrong;
 
     private float _currentDisplayTextTimer;
     private bool _isDisplayingText = false;
     [SerializeField] private float _displayTextDelay;
 
-    private bool _emotionDetected = false;
+    private float _currentDisplayEmotionDecisionTextTimer;
+    private bool _isDisplayingDecisionText = false;
+    private float _displayEmotionDecisionTextDelay = 1.0f;
 
-    // 1 - Smile | 2 - Sad
-    public int EmotionToFind = 1;
+    private bool _wasEmotionDetected = false;
+
+    // 0 - Netural | 1 - Smile | 2 - Sad
+    public Emotion EmotionToFind = Emotion.Netural;
+
+    public float ChasingBorderSpeedMultiplier = 1.5f;
 
     void Start ()
     {
@@ -42,7 +53,12 @@ public class EmotionManager : MonoBehaviour
 	    if (_isDisplayingText)
 	    {
 	        _currentDisplayTextTimer += Time.deltaTime;
-	        CheckEmotionText();
+	        CheckEmotion();
+	    }
+	    if (_isDisplayingDecisionText)
+	    {
+	        _currentDisplayEmotionDecisionTextTimer += Time.deltaTime;
+	        DisplayEmotionDecisionText();
 	    }
 
         // 1 - gdy emotion meter spadnie ponizej 20% wyswietl komunikat do wywolania emocji
@@ -50,9 +66,9 @@ public class EmotionManager : MonoBehaviour
 	    WatchEmotionMeter();
 
         // 2 - losowo wyswietl komunikat o wywolaniu emocji, gdy gracz nie zareguje przyspiesz melancholie
-	    if (!_isCheckingEmotion)
+	    if (!_isCheckingEmotion && !_isDisplayingDecisionText)
 	    {
-	        CheckRandomEmotion();
+	        PrepareCheckingRandomEmotion();
 	    }
 	}
 
@@ -78,7 +94,7 @@ public class EmotionManager : MonoBehaviour
         }
     }
 
-    private void CheckRandomEmotion()
+    private void PrepareCheckingRandomEmotion()
     {
         if (_currentRandomEmotionTimer >= _currentRandomEmotionDelay)
         {
@@ -87,12 +103,15 @@ public class EmotionManager : MonoBehaviour
             _currentRandomEmotionTimer = 0.0f;
             _currentRandomEmotionDelay = UnityEngine.Random.Range(2, 5);
 
-            EmotionToFind = UnityEngine.Random.Range(1, 3);
+            ResourceManager.DetectedEmotion = 0;
+            _wasEmotionDetected = false;
+
+            EmotionToFind = (Emotion) UnityEngine.Random.Range(1, 3);
             DisplayEmotionText(true);
         }
     }
 
-    private void CheckEmotionText()
+    private void CheckEmotion()
     {
         if (_currentDisplayTextTimer >= _displayTextDelay)
         {
@@ -100,27 +119,113 @@ public class EmotionManager : MonoBehaviour
             _isCheckingEmotion = false;
             _currentDisplayTextTimer = 0.0f;
 
-            if (!_emotionDetected)
+            // if time-up and no emotions
+            if (!_wasEmotionDetected)
             {
                 Debug.Log("Nie wykryto emocji");
+                ProcessWrongEmotion();
             }
+
+            return;
         }
 
-        // miejsce na sprawdzenie emocji
-        // ...
+        // check for found emotion
+        switch (ResourceManager.DetectedEmotion)
+        {
+            case Emotion.Netural:
+                //Debug.Log("Neutral");
+                break;
+
+            case Emotion.Fun:
+                if (EmotionToFind == Emotion.Fun)
+                {
+                    ProcessCorrectEmotion();
+                }
+                else if (EmotionToFind == Emotion.Sad)
+                {
+                    ProcessWrongEmotion();
+                }
+                break;
+
+            case Emotion.Sad:
+                if (EmotionToFind == Emotion.Sad)
+                {
+                    ProcessCorrectEmotion();
+                }
+                else if (EmotionToFind == Emotion.Fun)
+                {
+                    ProcessWrongEmotion();
+                }
+                break;
+
+            default:
+                Debug.Log("Invalid Emotion Detected");
+                ProcessWrongEmotion();
+                break;
+        } 
+    }
+
+    private void ProcessCorrectEmotion()
+    {
+        Debug.Log("Dobra emocja");
+        _wasEmotionDetected = true;
+        _isDisplayingDecisionText = true;
+
+        StopDetectingEmotions();
+    }
+
+    private void ProcessWrongEmotion()
+    {
+        Debug.Log("Zla emocja");
+        _wasEmotionDetected = true;
+        _isDisplayingDecisionText = true;
+
+        // speed-up chasing border
+        ResourceManager.ChasingBorderSpeed *= ChasingBorderSpeedMultiplier;
+
+        StopDetectingEmotions();
+    }
+
+    private void StopDetectingEmotions()
+    {
+        DisplayEmotionText(false);
+        _isCheckingEmotion = false;
+        _currentDisplayTextTimer = 0.0f;
     }
 
     private void DisplayEmotionText(bool enable)
     {
         _isDisplayingText = enable;
         EmotionTextHeader.gameObject.SetActive(enable);
-        if (EmotionToFind == 1)
+        if (EmotionToFind == Emotion.Fun)
         {
             EmotionTextSmile.gameObject.SetActive(enable);
         }
-        else
+        else if (EmotionToFind == Emotion.Sad)
         {
             EmotionTextSad.gameObject.SetActive(enable);
         }
+    }
+
+    private void DisplayEmotionDecisionText()
+    {
+        if (_currentDisplayEmotionDecisionTextTimer >= _displayEmotionDecisionTextDelay)
+        {
+            _currentDisplayEmotionDecisionTextTimer = 0.0f;
+            _isDisplayingDecisionText = false;
+            EmotionTextCorrect.gameObject.SetActive(false);
+            EmotionTextWrong.gameObject.SetActive(false);
+            return;
+        }
+
+        if (EmotionToFind == ResourceManager.DetectedEmotion)
+        {
+            EmotionTextCorrect.gameObject.SetActive(true);
+        }
+        else
+        {
+            EmotionTextWrong.gameObject.SetActive(true);
+        }
+
     }
 }

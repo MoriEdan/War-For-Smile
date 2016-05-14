@@ -4,8 +4,6 @@ using Helpers;
 
 public class ChasingBorder : Border
 {
-    public float Speed = 1.0f;
-
 	// Use this for initialization
     protected override void Start ()
     {
@@ -21,7 +19,7 @@ public class ChasingBorder : Border
         }
 
         var movement = transform.position;
-        movement.x += Speed*Time.deltaTime;
+        movement.x += ResourceManager.ChasingBorderSpeed*Time.deltaTime;
 
         transform.position = movement;
     }

@@ -9,4 +9,9 @@
     {
         Left, Central, Right
     }
+
+    public enum Emotion
+    {
+        Netural, Fun, Sad
+    }
 }
