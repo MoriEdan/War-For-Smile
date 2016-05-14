@@ -4,6 +4,9 @@ using System.Collections;
 public class BossTrigger : MonoBehaviour
 {
     public GameObject Boss;
+    public GameObject ChasingBorder;
+    public GameObject EnemySpawner;
+
     private bool _bossActivated = false;
 
     private void Start ()
@@ -24,6 +27,8 @@ public class BossTrigger : MonoBehaviour
             if (player)
             {
                 Boss.SetActive(true);
+                ChasingBorder.SetActive(false);
+                EnemySpawner.SetActive(false);
                 _bossActivated = true;
             }
         }

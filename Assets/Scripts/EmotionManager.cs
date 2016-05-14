@@ -46,6 +46,11 @@ public class EmotionManager : MonoBehaviour
 	
 	void Update ()
 	{
+	    if (ResourceManager.isDoingSetup)
+	    {
+	        return;
+	    }
+
 	    if (!_isCheckingEmotion)
 	    {
 	        _currentRandomEmotionTimer += Time.deltaTime;
@@ -169,7 +174,13 @@ public class EmotionManager : MonoBehaviour
     {
         Debug.Log("Dobra emocja");
         _wasEmotionDetected = true;
+
         _isDisplayingDecisionText = true;
+        DisplayEmotionDecisionText(true);
+
+        // give benefits to player
+        PlayerReference.UpdateEmotionMeterSlider(1000.0f);
+        PlayerReference.SetCurrentHeatBar(0.0f);
 
         StopDetectingEmotions();
     }
@@ -178,7 +189,9 @@ public class EmotionManager : MonoBehaviour
     {
         Debug.Log("Zla emocja");
         _wasEmotionDetected = true;
+
         _isDisplayingDecisionText = true;
+        DisplayEmotionDecisionText(true);
 
         // speed-up chasing border
         ResourceManager.ChasingBorderSpeed *= ChasingBorderSpeedMultiplier;
@@ -207,7 +220,7 @@ public class EmotionManager : MonoBehaviour
         }
     }
 
-    private void DisplayEmotionDecisionText()
+    private void DisplayEmotionDecisionText(bool isSetup = false)
     {
         if (_currentDisplayEmotionDecisionTextTimer >= _displayEmotionDecisionTextDelay)
         {
@@ -218,13 +231,16 @@ public class EmotionManager : MonoBehaviour
             return;
         }
 
-        if (EmotionToFind == ResourceManager.DetectedEmotion)
+        if (isSetup)
         {
-            EmotionTextCorrect.gameObject.SetActive(true);
-        }
-        else
-        {
-            EmotionTextWrong.gameObject.SetActive(true);
+            if (EmotionToFind == ResourceManager.DetectedEmotion)
+            {
+                EmotionTextCorrect.gameObject.SetActive(true);
+            }
+            else
+            {
+                EmotionTextWrong.gameObject.SetActive(true);
+            }
         }
 
     }

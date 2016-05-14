@@ -7,7 +7,7 @@ public class ChasingBorder : Border
 	// Use this for initialization
     protected override void Start ()
     {
-        
+        ResourceManager.ChasingBorderSpeed = 1.0f;
     }
 	
 	// Update is called once per frame

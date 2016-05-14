@@ -114,7 +114,7 @@ public class PlayerBullet : Bullet
     {
         if (ShouldCreateExplosion)
         {
-            var gO = (GameObject) Instantiate(ResourceManager.GetGameObject("Explosion1"), transform.position, transform.rotation);
+            var gO = (GameObject) Instantiate(ResourceManager.GetGameObject("Explo"), transform.position, transform.rotation);
             if (color.HasValue)
             {
                 var ps = gO.gameObject.GetComponent<ParticleSystem>();

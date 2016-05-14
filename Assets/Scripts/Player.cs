@@ -211,6 +211,12 @@ public class Player : Entity
         }
     }
 
+    public void SetCurrentHeatBar(float amount)
+    {
+        _currentHeat = amount;
+        HeatBar.value = _currentHeat;
+    }
+
     private void SetDisplayHealth(float health)
     {
         HealthText.text = string.Format("Health:{0}%", health.ToString("F0"));
