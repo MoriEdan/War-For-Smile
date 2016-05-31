@@ -17,7 +17,7 @@ public class PlayerControls : MonoBehaviour
 	
     private void Update ()
     {
-        if (_player.IsAlive && !ResourceManager.isDoingSetup)
+        if (_player.IsAlive && !ResourceManager.IsDoingSetup)
         {
             UpdateMouse();
             UpdateMovement();
@@ -84,6 +84,12 @@ public class PlayerControls : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.C))
         {
             ResourceManager.DetectedEmotion = Emotion.Netural;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            ResourceManager.DisplayWebcamView = !ResourceManager.DisplayWebcamView;
+            _player.WebcamView.SetActive(ResourceManager.DisplayWebcamView);
         }
     }
 }

@@ -37,7 +37,7 @@ public class CounterScreen : MonoBehaviour
             _currentDelay = 0.0f;
             CounterText.text = _currentDelay.ToString(CultureInfo.InvariantCulture);
             SpawnScreen.SetActive(false);
-            ResourceManager.isDoingSetup = false;
+            ResourceManager.IsDoingSetup = false;
         }
     }
 
@@ -48,6 +48,6 @@ public class CounterScreen : MonoBehaviour
         _currentDelay = SpawnDelay + 1;
 
         SpawnScreen.SetActive(true);
-        ResourceManager.isDoingSetup = true;
+        ResourceManager.IsDoingSetup = true;
     }
 }

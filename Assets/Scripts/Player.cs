@@ -62,6 +62,8 @@ public class Player : Entity
         }
     }
 
+    public GameObject WebcamView;
+
 
     protected override void Start()
     {

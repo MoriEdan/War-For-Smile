@@ -21,7 +21,7 @@ public class EnemySpawnManager : MonoBehaviour
 	// Update is called once per frame
     private void Update ()
     {
-        if (!ResourceManager.isDoingSetup)
+        if (!ResourceManager.IsDoingSetup)
         {
             _currentSpawnDelay += Time.deltaTime;
 

@@ -13,7 +13,7 @@ public class ChasingBorder : Border
 	// Update is called once per frame
     protected override void Update ()
     {
-        if (ResourceManager.isDoingSetup)
+        if (ResourceManager.IsDoingSetup)
         {
             return;
         }

@@ -46,7 +46,7 @@ public class EmotionManager : MonoBehaviour
 	
 	void Update ()
 	{
-	    if (ResourceManager.isDoingSetup)
+	    if (ResourceManager.IsDoingSetup)
 	    {
 	        return;
 	    }
