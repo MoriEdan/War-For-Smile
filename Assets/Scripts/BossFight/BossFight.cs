@@ -14,6 +14,7 @@ public class BossFight : MonoBehaviour
     public GameObject SuperCannonHolder;
     private BossCannon[] _cannons;
 
+    public float BossMaxHealth;
     public float BossHealth;
     public float RotationRate;
 
@@ -31,13 +32,22 @@ public class BossFight : MonoBehaviour
 	{
         _cannons = CannonHolder.GetComponentsInChildren<BossCannon>();
 
+        BossMaxHealth = BossHealth;
         BossHealthSlider.maxValue = BossHealth;
         BossHealthSlider.value = BossHealth;
         BossHealthSlider.gameObject.SetActive(true);
+
+        DestoryAllObstacles();
+
 	}
 	
 	void Update ()
 	{
+	    if (ResourceManager.IsDoingSetup)
+	    {
+	        return;
+	    }
+
 	    _currentExplosionDelay += Time.deltaTime;
 
 	    BossBody.transform.Rotate(Vector3.forward * (RotationRate * Time.deltaTime));
@@ -62,6 +72,7 @@ public class BossFight : MonoBehaviour
     public void UpdateBossHealth(float amout)
     {
         BossHealth -= amout;
+        BossHealth = Mathf.Clamp(BossHealth, 0.0f, BossMaxHealth);
         BossHealthSlider.value = BossHealth;
 
         if (BossHealth <= 0.0f)
@@ -138,5 +149,14 @@ public class BossFight : MonoBehaviour
         var y = (float)(radius * Mathf.Sin(angleInDegrees * Mathf.Deg2Rad)) + origin.y;
 
         return new Vector3(x, y);
+    }
+
+    private void DestoryAllObstacles()
+    {
+        var objs = GameObject.FindObjectsOfType<Obstacle>();
+        foreach (var obstacle in objs)
+        {
+            obstacle.SilentDestory();
+        }
     }
 }

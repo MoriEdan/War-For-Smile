@@ -10,6 +10,8 @@ public class CounterScreen : MonoBehaviour
     public GameObject SpawnScreen;
     public int SpawnDelay = 3;
 
+    public PlayerEmotions PlayerEmotionsReference;
+
     private float _currentDelay;
     private int _previousTime;
 
@@ -17,6 +19,11 @@ public class CounterScreen : MonoBehaviour
     {
         CounterText.text = SpawnDelay.ToString();
         _currentDelay = SpawnDelay + 1;
+
+        if (PlayerEmotionsReference == null)
+        {
+            Debug.LogError("PlayerEmotions not found");
+        }
     }
 	
     private void Update ()
@@ -38,6 +45,7 @@ public class CounterScreen : MonoBehaviour
             CounterText.text = _currentDelay.ToString(CultureInfo.InvariantCulture);
             SpawnScreen.SetActive(false);
             ResourceManager.IsDoingSetup = false;
+            PlayerEmotionsReference.Working = true;
         }
     }
 
@@ -49,5 +57,6 @@ public class CounterScreen : MonoBehaviour
 
         SpawnScreen.SetActive(true);
         ResourceManager.IsDoingSetup = true;
+        PlayerEmotionsReference.Working = false;
     }
 }

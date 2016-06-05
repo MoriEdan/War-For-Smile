@@ -9,6 +9,7 @@ using Helpers;
 public class EmotionManager : MonoBehaviour
 {
     public Player PlayerReference;
+    public PlayerEmotions PlayerEmotionsReference;
 
     private float _emotionValueToTrigger = 20.0f;
     public bool IsLoadingEmotions = false;
@@ -39,16 +40,24 @@ public class EmotionManager : MonoBehaviour
 
     public float ChasingBorderSpeedMultiplier = 1.5f;
 
-    void Start ()
+    private void Start ()
     {
-	    
+        if (PlayerEmotionsReference == null)
+        {
+            Debug.LogError("PlayerEmotions not found");
+        }
 	}
-	
-	void Update ()
+
+    private void Update ()
 	{
 	    if (ResourceManager.IsDoingSetup)
 	    {
 	        return;
+	    }
+
+	    if (!PlayerEmotionsReference.enabled)
+	    {
+	        PlayerEmotionsReference.enabled = true;
 	    }
 
 	    if (!_isCheckingEmotion)
@@ -127,7 +136,7 @@ public class EmotionManager : MonoBehaviour
             // if time-up and no emotions
             if (!_wasEmotionDetected)
             {
-                Debug.Log("Nie wykryto emocji");
+                //Debug.Log("Nie wykryto emocji");
                 ProcessWrongEmotion();
             }
 
@@ -172,7 +181,7 @@ public class EmotionManager : MonoBehaviour
 
     private void ProcessCorrectEmotion()
     {
-        Debug.Log("Dobra emocja");
+        //Debug.Log("Dobra emocja");
         _wasEmotionDetected = true;
 
         _isDisplayingDecisionText = true;
@@ -187,7 +196,7 @@ public class EmotionManager : MonoBehaviour
 
     private void ProcessWrongEmotion()
     {
-        Debug.Log("Zla emocja");
+        //Debug.Log("Zla emocja");
         _wasEmotionDetected = true;
 
         _isDisplayingDecisionText = true;

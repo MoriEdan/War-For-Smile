@@ -63,6 +63,7 @@ public class Player : Entity
     }
 
     public GameObject WebcamView;
+    public GameObject PauseScreen;
 
 
     protected override void Start()

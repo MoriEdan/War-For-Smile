@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Affdex;
+using Helpers;
 using UnityEngine.UI;
 
 public class WebcamTexture : MonoBehaviour
@@ -9,7 +10,7 @@ public class WebcamTexture : MonoBehaviour
 
     private RawImage _rawImage;
 
-    void Start ()
+    private void Start ()
     {
         if (!AffdexUnityUtils.ValidPlatform())
         {
@@ -20,8 +21,13 @@ public class WebcamTexture : MonoBehaviour
         _rawImage = GetComponent<RawImage>();
     }
 
-	void Update ()
+    private void Update ()
     {
+        if (ResourceManager.IsDoingSetup)
+        {
+            return;
+        }
+
         var texture = CameraInput.Texture;
 
         if (texture == null)
