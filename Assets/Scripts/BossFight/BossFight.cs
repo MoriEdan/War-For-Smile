@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Helpers;
 using Helpers;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -28,17 +29,29 @@ public class BossFight : MonoBehaviour
 
     private bool _hasBossExploded = false;
 
+    private ScoreHandler _scoreHandler;
+    public float BossScore;
+
     void Start ()
 	{
         _cannons = CannonHolder.GetComponentsInChildren<BossCannon>();
 
         BossMaxHealth = BossHealth;
-        BossHealthSlider.maxValue = BossHealth;
+        BossHealthSlider.maxValue = BossMaxHealth;
         BossHealthSlider.value = BossHealth;
         BossHealthSlider.gameObject.SetActive(true);
 
+        _scoreHandler = GameObject.FindGameObjectWithTag("ScoreHandler").GetComponent<ScoreHandler>();
+        if (_scoreHandler == null)
+        {
+            Debug.LogError("ScoreHandler not found");
+        }
+
         DestoryAllObstacles();
 
+        AnalyticLogger.AddData(AnalyticEventType.BossFightStarted);
+        _scoreHandler.BossHealth = BossMaxHealth;
+        _scoreHandler.BossFightStarted = true;
 	}
 	
 	void Update ()
@@ -55,6 +68,7 @@ public class BossFight : MonoBehaviour
 
 	    if (BossHealth <= 0.0f && !_hasBossExploded)
 	    {
+	        _scoreHandler.TotalPlayerPoints += BossScore;
 	        PlayDeadSequence();
 	    }
 
@@ -79,6 +93,7 @@ public class BossFight : MonoBehaviour
         {
             BossHealth = 0.0f;
         }
+        _scoreHandler.BossHealth = BossHealth;
     }
 
     private void UpdateBossShooting()

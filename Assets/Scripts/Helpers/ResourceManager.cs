@@ -11,6 +11,7 @@ namespace Helpers
         public static Emotion DetectedEmotion { get; set; }
         public static float ChasingBorderSpeed = 1.0f;
         public static bool DisplayWebcamView { get; set; }
+        public static string FilepathWithAnalyticData = "AnalyticData.csv";
 
         private static GameObjectList _gameObjectList;
         public static void SetGameObjectList(GameObjectList objectList)

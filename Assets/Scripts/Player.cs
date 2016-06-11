@@ -69,9 +69,12 @@ public class Player : Entity
     protected override void Start()
     {
         _scoreHandler = GameObject.FindGameObjectWithTag("ScoreHandler").GetComponent<ScoreHandler>();
+        _scoreHandler.BossFightStarted = false;
         PlayerScore = 0.0f;
         _currentHealth = MaxHealth;
         IsAlive = true;
+
+        _scoreHandler.ShotsFired = 0;
         //transform.position = SpawnPoint.transform.position;
 
         if (EnableSpawnScreen)
@@ -114,6 +117,12 @@ public class Player : Entity
         }
     }
 
+    public void OnApplicationQuit()
+    {
+        AnalyticLogger.AddData(AnalyticEventType.GameClosed);
+        AnalyticLogger.SaveToFile();
+    }
+
     public void Shoot()
     {
         if (ReadyToFire())
@@ -145,6 +154,8 @@ public class Player : Entity
             {
                 UpdateAmmoState(-10);
             }
+
+            _scoreHandler.ShotsFired++;
         }
     }
 

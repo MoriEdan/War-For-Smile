@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Helpers;
 using Helpers;
 
 public class Obstacle : Entity
@@ -8,6 +10,7 @@ public class Obstacle : Entity
 
     public Color Color;
     public float Health = 100;
+    public float MaxHealth = 100;
 
     public AudioSource ExplosionAudioSource;
     public BoxCollider2D BoxCollider2D;
@@ -47,6 +50,14 @@ public class Obstacle : Entity
         if (addScoreToPlayer)
         {
             Player.PlayerScore += ScoreToAdd;
+            AnalyticLogger.AddData(AnalyticEventType.ObstacleDestoyed, this.name);
+        }
+        else
+        {
+            if (Math.Abs(Health - MaxHealth) > 1e-3)
+            {
+                AnalyticLogger.AddData(AnalyticEventType.ObstacleHit, string.Format("{0}/{1} HP", Health, MaxHealth));
+            }
         }
         Destroy(AliveGameObject);
 
@@ -58,17 +69,9 @@ public class Obstacle : Entity
     public void SilentDestory()
     {
         Destroy(gameObject);
-    }
-
-    private void OnBecameInvisible()
-    {
-        enabled = false;
-        Debug.Log(enabled);
-    }
-
-    private void OnBecameVisible()
-    {
-        enabled = true;
-        Debug.Log(enabled);
+        if (Math.Abs(Health - MaxHealth) > 1e-3)
+        {
+            AnalyticLogger.AddData(AnalyticEventType.ObstacleHit, string.Format("{0}/{1} HP", Health, MaxHealth));
+        }
     }
 }

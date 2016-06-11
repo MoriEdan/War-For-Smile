@@ -50,7 +50,7 @@ public class PlayerEmotions : ImageResultsListener
             }
             else
             {
-                ResourceManager.DetectedEmotion = Emotion.Netural;
+                ResourceManager.DetectedEmotion = Emotion.Netural;       
             }
         }
     }
@@ -63,6 +63,7 @@ public class PlayerEmotions : ImageResultsListener
         }
 
         //Debug.Log("Face found");
+        AnalyticLogger.AddData(AnalyticEventType.FaceFound);
         Player.PauseScreen.SetActive(false);
         ResourceManager.IsDoingSetup = false;
 
@@ -76,6 +77,7 @@ public class PlayerEmotions : ImageResultsListener
         }
 
         //Debug.Log("Face lost");
+        AnalyticLogger.AddData(AnalyticEventType.FaceLost);
         Player.PauseScreen.SetActive(true);
         ResourceManager.IsDoingSetup = true;
     }

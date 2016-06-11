@@ -122,6 +122,8 @@ public class EmotionManager : MonoBehaviour
 
             EmotionToFind = (Emotion) UnityEngine.Random.Range(1, 3);
             DisplayEmotionText(true);
+
+            AnalyticLogger.AddData(AnalyticEventType.EmotionToExpress, EmotionToFind.GetDescription());
         }
     }
 
@@ -173,7 +175,7 @@ public class EmotionManager : MonoBehaviour
                 break;
 
             default:
-                Debug.Log("Invalid Emotion Detected");
+                Debug.LogError("Invalid Emotion Detected");
                 ProcessWrongEmotion();
                 break;
         } 
@@ -182,6 +184,8 @@ public class EmotionManager : MonoBehaviour
     private void ProcessCorrectEmotion()
     {
         //Debug.Log("Dobra emocja");
+        AnalyticLogger.AddData(AnalyticEventType.EmotionRegistered, ResourceManager.DetectedEmotion.GetDescription());
+
         _wasEmotionDetected = true;
 
         _isDisplayingDecisionText = true;
@@ -197,6 +201,8 @@ public class EmotionManager : MonoBehaviour
     private void ProcessWrongEmotion()
     {
         //Debug.Log("Zla emocja");
+        AnalyticLogger.AddData(AnalyticEventType.EmotionRegistered, ResourceManager.DetectedEmotion.GetDescription());
+
         _wasEmotionDetected = true;
 
         _isDisplayingDecisionText = true;
